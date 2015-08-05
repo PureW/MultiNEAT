@@ -5,11 +5,12 @@ from waflib.Build import BuildContext, CleanContext, \
 
 # the following two variables are used by the target "waf dist"
 VERSION = '0.0.1'
-APPNAME = 'multineat'
+LIBNAME = 'multineat'
+APPNAME = 'multineat_main'
 
-SOURCES = ['src/Genome.cpp',
+SOURCES_LIB = [
+           'src/Genome.cpp',
            'src/Innovation.cpp',
-           'src/Main.cpp',
            'src/NeuralNetwork.cpp',
            'src/Parameters.cpp',
            'src/PhenotypeBehavior.cpp',
@@ -20,7 +21,7 @@ SOURCES = ['src/Genome.cpp',
            'src/Substrate.cpp',
            'src/Utils.cpp',
            ]
-INCLUDES = ['.', 'src']
+INCLUDES = ['.', 'include']
 LIBS = ['m',
         'boost_system']
 
@@ -56,13 +57,23 @@ def build(bld):
     if not bld.variant:
         bld.fatal('call "waf build_debug" or "waf build_release", '
                   'and try "waf --help"')
-    bld.program(source=SOURCES,
+
+    bld.stlib(source=SOURCES_LIB,
+              target=LIBNAME,
+              includes=INCLUDES,
+              cppflags=CPPFLAGS,
+              lib=LIBS,
+              # linkflags=['-pg'],
+              )
+    bld.program(source='src/Main.cpp',
                 target=APPNAME,
                 includes=INCLUDES,
                 cppflags=CPPFLAGS,
                 lib=LIBS,
-                #linkflags=['-pg'],
+                use=LIBNAME
+                # linkflags=['-pg'],
                 )
+
 
 for x in ['debug', 'release']:
     for y in (BuildContext, CleanContext, InstallContext, UninstallContext):

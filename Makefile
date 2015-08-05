@@ -1,5 +1,6 @@
 
-PROGRAM = multineat
+LIBRARY = libmultineat.a
+PROGRAM = multineat_main
 TEST_DIR = .testing
 
 .PHONY: all clean release debug
@@ -7,10 +8,10 @@ TEST_DIR = .testing
 all: release
 
 debug:
-	rm -f $(PROGRAM) && ./waf build_debug && mv build/debug/$(PROGRAM) .
+	rm -f build/$(PROGRAM) build/$(LIBRARY) && ./waf build_debug && mv build/debug/$(PROGRAM) build/debug/$(LIBRARY) build/
 
 release:
-	rm -f $(PROGRAM) && ./waf build_release && mv build/release/$(PROGRAM) .
+	rm -f build/$(PROGRAM) && ./waf build_release && mv build/release/$(PROGRAM) build/
 
 clean:
 	./waf clean_debug clean_release

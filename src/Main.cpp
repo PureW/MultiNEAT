@@ -90,7 +90,7 @@ double xortest(Genome& g, Substrate& subst, Parameters& params)
 int main()
 {
     Parameters params;
-    params.PopulationSize = 2;
+    params.PopulationSize = 200;
 
     params.DynamicCompatibility = true;
     params.CompatTreshold = 2.0;
@@ -132,23 +132,22 @@ int main()
     params.ActivationFunction_Linear_Prob = 1.0;
 
     params.DivisionThreshold = 0.5;
-	params.VarianceThreshold = 0.03;
-	params.BandThreshold = 0.3;
-	params.InitialDepth = 2;
-	params.MaxDepth = 3;
-	params.IterationLevel = 1;
-	params.Leo = false;
-	params.GeometrySeed = false;
-	params.LeoSeed = false;
-	params.LeoThreshold = 0.3;
-	params.CPPN_Bias = -1.0;
-	params.Qtree_X = 0.0;
-	params.Qtree_Y = 0.0;
-	params.Width = 1.;
-	params.Height = 1.;
-	params.Elitism = 0.1;
+    params.VarianceThreshold = 0.03;
+    params.BandThreshold = 0.3;
+    params.InitialDepth = 2;
+    params.MaxDepth = 3;
+    params.IterationLevel = 1;
+    params.Leo = false;
+    params.GeometrySeed = false;
+    params.LeoSeed = false;
+    params.LeoThreshold = 0.3;
+    params.CPPN_Bias = -1.0;
+    params.Qtree_X = 0.0;
+    params.Qtree_Y = 0.0;
+    params.Width = 1.;
+    params.Height = 1.;
+    params.Elitism = 0.1;
 
-    RNG rng;
     std::vector< std::vector<double> > inputs;
     std::vector< std::vector<double> > hidden;
     std::vector< std::vector<double> > outputs;
@@ -218,7 +217,7 @@ int main()
     //NSGA
     Population pop(s, params, true, 1.0);
 
-    for(int k=0; k<5000; k++)
+    for(int k=0; k<100; k++)
     {
         //std::vector<double> bestf(2,-999999);
         double bestf = -999999;
@@ -254,7 +253,7 @@ int main()
         //printf("Generation: %d, best fitness: %3.5f\n", k, bestf[0]);
          printf("Generation: %d, best fitness: %3.5f\n", k, bestf);
         pop.Epoch();
-        }
+    }
     return 0;
 }
 

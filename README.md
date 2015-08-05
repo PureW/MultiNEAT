@@ -26,6 +26,12 @@ MultiNEAT
 MultiNEAT was originally named NSNEAT. It was a generic NEAT implementation by Peter Chervenski and Shane Ryan, created while working for NEAT Sciences Ltd in 2007-2008. During this time the library was developed from a pet project out of consideration to a full-scale neuroevolution library, designed for evolving proprietary solutions for trading on the financial markets. Many new concepts such as RTRL, Leaky integrators, HyperNEAT and Novelty Search were introduced in the following years and shown to work well in various demonstration programs published by Peter Chervenski. In 2012 NEAT Sciences's founder Shane Ryan and Peter Chervenski agreed to release the library to the public under the GNU Lesser General Public License (v 3.0) with Python bindings added.
 
 
+Dependencies
+============
+
+ * boost_system
+
+
 Compilation
 ===========
 

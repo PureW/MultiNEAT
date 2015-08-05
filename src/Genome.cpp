@@ -32,10 +32,11 @@
 #include <algorithm>
 #include <fstream>
 #include <queue>
-#include <math.h>
+#include <cmath>
+#include <memory>
 #include <utility>
+
 #include <boost/unordered_map.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/accumulators/accumulators.hpp>
 //#include <boost/accumulators/statistics.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
@@ -2773,7 +2774,7 @@ void Genome::Build_ES_Phenotype(NeuralNetwork& net, Substrate& subst, Parameters
     std::vector<double> point;
     point.reserve(3);
 
-    boost::shared_ptr<QuadPoint> root;
+    std::shared_ptr<QuadPoint> root;
 
     boost::unordered_map< std::vector<double>, int > hidden_nodes;
     hidden_nodes.reserve(maxNodes);
@@ -2797,7 +2798,7 @@ void Genome::Build_ES_Phenotype(NeuralNetwork& net, Substrate& subst, Parameters
     for(unsigned int i = 0; i < input_count; i++)
     {
         // Get the Quadtree and express the connections in it for this input
-        root = boost::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
+        root = std::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
         DivideInitialize( subst.m_input_coords[i], root,t_temp_phenotype,  params, true, 0.0);
         TempConnections.clear();
         PruneExpress( subst.m_input_coords[i], root, t_temp_phenotype, params, TempConnections, true);
@@ -2837,7 +2838,7 @@ void Genome::Build_ES_Phenotype(NeuralNetwork& net, Substrate& subst, Parameters
         boost::unordered_map< std::vector<double>, int >::iterator itr_hid;
         for(itr_hid = unexplored_nodes.begin(); itr_hid != unexplored_nodes.end(); itr_hid++)
         {
-            root = boost::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
+            root = std::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
             DivideInitialize( itr_hid -> first, root, t_temp_phenotype, params, true, 0.0);
             TempConnections.clear();
             PruneExpress(itr_hid -> first , root, t_temp_phenotype, params, TempConnections, true);
@@ -2883,7 +2884,7 @@ void Genome::Build_ES_Phenotype(NeuralNetwork& net, Substrate& subst, Parameters
     // existing hidden nodes and no new nodes are added.
     for(unsigned int i = 0; i < output_count; i++)
     {
-        root = boost::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
+        root = std::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
         DivideInitialize(subst.m_output_coords[i], root, t_temp_phenotype, params, false, 0.0);
         TempConnections.clear();
         PruneExpress(subst.m_output_coords[i], root, t_temp_phenotype, params, TempConnections, false);
@@ -2962,7 +2963,7 @@ void Genome::Build_ES_Phenotype(NeuralNetwork& net, Substrate& subst, Parameters
 }
 
 // Used to determine the placement of hidden neurons in the Evolvable Substrate.
-void Genome::DivideInitialize(const std::vector<double>& node, boost::shared_ptr<QuadPoint>& root,  NeuralNetwork& cppn, Parameters& params, const bool& outgoing, const double& z_coord)
+void Genome::DivideInitialize(const std::vector<double>& node, std::shared_ptr<QuadPoint>& root,  NeuralNetwork& cppn, Parameters& params, const bool& outgoing, const double& z_coord)
 {   // Have to check if this actually does something useful here
     CalculateDepth();
     int cppn_depth = GetDepth();
@@ -2972,18 +2973,18 @@ void Genome::DivideInitialize(const std::vector<double>& node, boost::shared_ptr
     // Standard Tree stuff. Create children, check their output with the cppn
     // and if they have higher variance add them to their parent. Repeat with the children
     // until maxDepth has been reached or if the variance isn't high enough.
-    boost::shared_ptr<QuadPoint> p;
+    std::shared_ptr<QuadPoint> p;
 
-    std::queue<boost::shared_ptr<QuadPoint> > q;
+    std::queue<std::shared_ptr<QuadPoint> > q;
     q.push(root);
     while (!q.empty())
     {
         p = q.front();
         // Add children
-        p -> children.push_back(boost::shared_ptr<QuadPoint>(new QuadPoint(p -> x - p -> width/2, p -> y - p -> height/2 , p -> width/2, p -> height/2, p -> level + 1)));
-        p -> children.push_back(boost::shared_ptr<QuadPoint>(new QuadPoint(p -> x - p -> width/2, p -> y + p ->height/2 , p -> width/2, p -> height/2, p -> level + 1)));
-        p -> children.push_back(boost::shared_ptr<QuadPoint>(new QuadPoint(p -> x + p -> width/2, p -> y + p ->height/2 , p -> width/2, p -> height/2, p -> level + 1)));
-        p -> children.push_back(boost::shared_ptr<QuadPoint>(new QuadPoint(p -> x + p -> width/2, p -> y - p ->height/2 , p -> width/2, p -> height/2, p -> level + 1)));
+        p -> children.push_back(std::shared_ptr<QuadPoint>(new QuadPoint(p -> x - p -> width/2, p -> y - p -> height/2 , p -> width/2, p -> height/2, p -> level + 1)));
+        p -> children.push_back(std::shared_ptr<QuadPoint>(new QuadPoint(p -> x - p -> width/2, p -> y + p ->height/2 , p -> width/2, p -> height/2, p -> level + 1)));
+        p -> children.push_back(std::shared_ptr<QuadPoint>(new QuadPoint(p -> x + p -> width/2, p -> y + p ->height/2 , p -> width/2, p -> height/2, p -> level + 1)));
+        p -> children.push_back(std::shared_ptr<QuadPoint>(new QuadPoint(p -> x + p -> width/2, p -> y - p ->height/2 , p -> width/2, p -> height/2, p -> level + 1)));
 
         for(unsigned int i = 0; i < p-> children.size(); i++)
         {
@@ -3043,7 +3044,7 @@ void Genome::DivideInitialize(const std::vector<double>& node, boost::shared_ptr
 }
 
 // We take the tree generated above and see which connections can be expressed on the basis of Variance threshold, Band threshold and LEO.
-void Genome::PruneExpress( const std::vector<double>& node, boost::shared_ptr<QuadPoint> &root, NeuralNetwork& cppn, Parameters& params, std::vector<Genome::TempConnection>& connections, const bool& outgoing)
+void Genome::PruneExpress( const std::vector<double>& node, std::shared_ptr<QuadPoint> &root, NeuralNetwork& cppn, Parameters& params, std::vector<Genome::TempConnection>& connections, const bool& outgoing)
 {
     if(root -> children[0] == NULL)
     {
@@ -3175,7 +3176,7 @@ void Genome::PruneExpress( const std::vector<double>& node, boost::shared_ptr<Qu
 }
 // Calculates the variance of a given Quadpoint.
 // Maybe an alternative solution would be to add this in the Quadpoint const.
-double Genome::Variance(boost::shared_ptr<QuadPoint> &point)
+double Genome::Variance(std::shared_ptr<QuadPoint> &point)
 {
     if (point -> children.size()  == 0)
     {
@@ -3189,11 +3190,11 @@ double Genome::Variance(boost::shared_ptr<QuadPoint> &point)
     }
     /*
     //Old approach. Traverses the entire tree. The new one checks just the children and seems to work just as well.
-    std::queue<boost::shared_ptr<QuadPoint> > q;
+    std::queue<std::shared_ptr<QuadPoint> > q;
     q.push(point);
     while(!q.empty())
         {
-            boost::shared_ptr<QuadPoint> c(q.front());
+            std::shared_ptr<QuadPoint> c(q.front());
             q.pop();
         cout << "Depth " << c -> level << endl;
             if (c -> children.size() > 0)
@@ -3216,7 +3217,7 @@ double Genome::Variance(boost::shared_ptr<QuadPoint> &point)
     return boost::accumulators::variance(acc);
 }
 // Helper method for Variance
-void Genome::CollectValues(std::vector<double>& vals, boost::shared_ptr<QuadPoint>& point)
+void Genome::CollectValues(std::vector<double>& vals, std::shared_ptr<QuadPoint>& point)
 {
     //In theory we shouldn't get here at all.
     if (point == NULL)
@@ -3253,7 +3254,7 @@ void Genome::CollectValues(std::vector<double>& vals, boost::shared_ptr<QuadPoin
         BuildPhenotype(cppn);
         cppn.Flush();
 
-        boost::shared_ptr<QuadPoint> root  = boost::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
+        std::shared_ptr<QuadPoint> root  = std::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
 
         DivideInitialize(node, root, cppn, params, outgoing, 0.0);
         PruneExpress(node, root, cppn, params, validpoints, outgoing);

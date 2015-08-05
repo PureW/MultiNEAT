@@ -29,7 +29,7 @@
 
 
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 #include <time.h>
 #include "Random.h"
 #include "Utils.h"
@@ -57,7 +57,7 @@ void RNG::TimeSeed()
 int RNG::RandPosNeg()
 {
 #ifdef USE_BOOST_RANDOM
-    boost::random::uniform_int_distribution<> dist(0, 1);
+    std::uniform_int_distribution<> dist(0, 1);
     int choice = dist(gen);
 #else
     int choice = rand() % 2;
@@ -72,21 +72,21 @@ int RNG::RandPosNeg()
 int RNG::RandInt(int aX, int aY)
 {
 #ifdef USE_BOOST_RANDOM
-    boost::random::uniform_int_distribution<> dist(aX, aY);
+    std::uniform_int_distribution<> dist(aX, aY);
     return dist(gen);
 #else
     return aX + (rand() % (aY - aX + 1));
 #endif
-    
+
 }
 
 // Returns a random number from a uniform distribution in the range of [0 .. 1]
 double RNG::RandFloat()
 {
 #ifdef USE_BOOST_RANDOM
-    boost::random::uniform_01<> dist;
+    std::uniform_real_distribution<> dist(0.0, 1.0);
     return dist(gen);
-#else 
+#else
     return (double)(rand() % 10000000) / 10000000.0;
 #endif
 }
@@ -101,15 +101,15 @@ double RNG::RandFloatClamped()
 double RNG::RandGaussClamped()
 {
 #ifdef USE_BOOST_RANDOM
-    boost::random::normal_distribution<> dist;
+    std::normal_distribution<> dist;
     double pick = dist(gen);
     Clamp(pick, -1, 1);
     return pick;
-#else 
+#else
     static int t_iset=0;
     static double t_gset;
     double t_fac,t_rsq,t_v1,t_v2;
-    
+
     if (t_iset==0)
     {
         do
@@ -119,13 +119,13 @@ double RNG::RandGaussClamped()
             t_rsq=t_v1*t_v1+t_v2*t_v2;
         }
         while (t_rsq>=1.0 || t_rsq==0.0);
-    
+
         t_fac=sqrt(-2.0*log(t_rsq)/t_rsq);
         t_gset=t_v1*t_fac;
         t_iset=1;
-    
+
         double t_tmp = t_v2*t_fac;
-    
+
         Clamp(t_tmp, -1.0, 1.0);
         return t_tmp;
     }
@@ -142,7 +142,7 @@ double RNG::RandGaussClamped()
 int RNG::Roulette(std::vector<double>& a_probs)
 {
 #ifdef USE_BOOST_RANDOM
-    boost::random::discrete_distribution<> d_dist(a_probs);
+    std::discrete_distribution<int> d_dist(a_probs.begin(), a_probs.end());
     return d_dist(gen);
 #else
     double t_marble = 0, t_spin = 0, t_total_score = 0;
@@ -151,7 +151,7 @@ int RNG::Roulette(std::vector<double>& a_probs)
         t_total_score += a_probs[i];
     }
     t_marble = RandFloat() * t_total_score;
-    
+
     int t_chosen = 0;
     t_spin = a_probs[t_chosen];
     while(t_spin < t_marble)
@@ -159,7 +159,7 @@ int RNG::Roulette(std::vector<double>& a_probs)
         t_chosen++;
         t_spin += a_probs[t_chosen];
     }
-    
+
     return t_chosen;
 #endif
 }

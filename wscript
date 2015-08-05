@@ -26,7 +26,7 @@ LIBS = ['m',
         'boost_system']
 
 CPPFLAGS = ['-std=c++11', '-Wall', '-pedantic']
-
+DEFINES=['USE_BOOST_RANDOM']
 
 # these variables are mandatory ('/' are converted automatically)
 top = '.'
@@ -35,7 +35,6 @@ out = 'build'
 
 def options(opt):
     opt.load('compiler_cxx')
-
 
 def configure(conf):
 
@@ -57,6 +56,8 @@ def build(bld):
     if not bld.variant:
         bld.fatal('call "waf build_debug" or "waf build_release", '
                   'and try "waf --help"')
+
+    bld.env.DEFINES = ['USE_BOOST_RANDOM=1']
 
     bld.stlib(source=SOURCES_LIB,
               target=LIBNAME,

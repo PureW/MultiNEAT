@@ -11,7 +11,7 @@ debug:
 	rm -f build/$(PROGRAM) build/$(LIBRARY) && ./waf build_debug && mv build/debug/$(PROGRAM) build/debug/$(LIBRARY) build/
 
 release:
-	rm -f build/$(PROGRAM) && ./waf build_release && mv build/release/$(PROGRAM) build/
+	rm -f build/$(PROGRAM) build/$(LIBRARY) && ./waf build_release && mv build/release/$(PROGRAM) build/release/$(LIBRARY) build/
 
 clean:
 	./waf clean_debug clean_release

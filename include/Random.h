@@ -31,7 +31,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef USE_BOOST_RANDOM
-    #include <boost/random.hpp>
+    #include <random>
 #else
     #include <stdlib.h>
 #endif
@@ -44,9 +44,9 @@ namespace NEAT
 
 class RNG
 {
-    
+
 #ifdef USE_BOOST_RANDOM
-    boost::random::mt19937 gen;
+    std::mt19937 gen;
 #endif
 
 public:

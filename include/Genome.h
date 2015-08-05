@@ -38,11 +38,11 @@
 
 #include <vector>
 #include <queue>
+#include <memory>
 
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "NeuralNetwork.h"
 #include "Substrate.h"
@@ -503,7 +503,7 @@ public:
         double leo;
 
 
-        std::vector<boost::shared_ptr<QuadPoint> > children;
+        std::vector<std::shared_ptr<QuadPoint> > children;
 
         QuadPoint()
         {
@@ -548,17 +548,17 @@ public:
                             Parameters& params);
 
     void DivideInitialize(
-        const std::vector<double>& node,boost::shared_ptr<QuadPoint>& root, NeuralNetwork& cppn, Parameters& params,
+        const std::vector<double>& node,std::shared_ptr<QuadPoint>& root, NeuralNetwork& cppn, Parameters& params,
         const bool& outgoing, const double& z_coord);
 
     void PruneExpress(const std::vector<double>& node,
-                      boost::shared_ptr<QuadPoint>& root, NeuralNetwork& cppn,
+                      std::shared_ptr<QuadPoint>& root, NeuralNetwork& cppn,
                       Parameters& params, std::vector<Genome::TempConnection>& connections,
                       const bool& outgoing);
 
-    void CollectValues(std::vector<double>& vals, boost::shared_ptr<QuadPoint>& point);
+    void CollectValues(std::vector<double>& vals, std::shared_ptr<QuadPoint>& point);
 
-    double Variance( boost::shared_ptr<QuadPoint> &point);
+    double Variance( std::shared_ptr<QuadPoint> &point);
 
     void Clean_Net( std::vector<Connection>& connections, unsigned int input_count,
                     unsigned int output_count, unsigned int hidden_count);

@@ -2872,7 +2872,7 @@ void Genome::Build_ES_Phenotype(NeuralNetwork& net, Substrate& subst, Parameters
         boost::unordered_map< std::vector<double>, int >::iterator itr1;
         for(itr1 = hidden_nodes.begin(); itr1 != hidden_nodes.end(); itr1++)
         {
-            if(unexplored_nodes.find(itr1 -> first) == unexplored_nodes.end());
+            if(unexplored_nodes.find(itr1 -> first) == unexplored_nodes.end())
             {
                 temp.insert(std::make_pair(itr1 -> first, itr1 -> second));
             }

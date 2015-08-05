@@ -29,7 +29,7 @@
 
 
 
-#include <math.h>
+#include <cmath>
 #include <float.h>
 #include <fstream>
 #include <sstream>
@@ -650,9 +650,9 @@ void NeuralNetwork::Adapt(Parameters& a_Parameters)
     double t_max_weight = -999999999;
     for (unsigned int i = 0; i < m_connections.size(); i++)
     {
-        if (abs(m_connections[i].m_weight) > t_max_weight)
+        if (std::abs(m_connections[i].m_weight) > t_max_weight)
         {
-            t_max_weight = abs(m_connections[i].m_weight);
+            t_max_weight = std::abs(m_connections[i].m_weight);
         }
     }
 
@@ -936,4 +936,4 @@ bool NeuralNetwork::Load(const char *a_filename)
 }
 
 
-}; // namespace NEAT
+} // namespace NEAT

@@ -33,15 +33,16 @@
 #ifdef USE_BOOST_PYTHON
 
 #include <boost/python.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/shared_ptr.hpp>
 
 #endif
 
 #include <vector>
 #include <queue>
+
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "NeuralNetwork.h"
 #include "Substrate.h"
@@ -562,9 +563,9 @@ public:
     void Clean_Net( std::vector<Connection>& connections, unsigned int input_count,
                     unsigned int output_count, unsigned int hidden_count);
 
-    py::list GetPoints(py::tuple& node,Parameters& params, bool outgoing);
-
 #ifdef USE_BOOST_PYTHON
+
+    py::list GetPoints(py::tuple& node,Parameters& params, bool outgoing);
 
     // Serialization
     friend class boost::serialization::access;

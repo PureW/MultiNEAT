@@ -3238,31 +3238,35 @@ void Genome::CollectValues(std::vector<double>& vals, boost::shared_ptr<QuadPoin
     }
 }
 
-// Returns all the nodes found by a query for a single point. Useful for visualisation and things like that.
-py::list Genome::GetPoints(py::tuple& t_node,Parameters& params, bool outgoing )
-{   std::vector<double> node;
-    std::vector<TempConnection> validpoints;
-    for(int j=0; j<py::len(t_node); j++)
-    {   node.push_back(py::extract<double>(t_node[j]));
+#ifdef USE_BOOST_PYTHON
+
+
+    // Returns all the nodes found by a query for a single point. Useful for visualisation and things like that.
+    py::list Genome::GetPoints(py::tuple& t_node,Parameters& params, bool outgoing )
+    {   std::vector<double> node;
+        std::vector<TempConnection> validpoints;
+        for(int j=0; j<py::len(t_node); j++)
+        {   node.push_back(py::extract<double>(t_node[j]));
+        }
+
+        NeuralNetwork cppn(true);
+        BuildPhenotype(cppn);
+        cppn.Flush();
+
+        boost::shared_ptr<QuadPoint> root  = boost::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
+
+        DivideInitialize(node, root, cppn, params, outgoing, 0.0);
+        PruneExpress(node, root, cppn, params, validpoints, outgoing);
+        py::list return_values;
+
+        for (unsigned int i = 0; i < validpoints.size(); i++)
+        {
+            return_values.append(validpoints[i].target);
+        }
+
+        return return_values;
     }
-
-    NeuralNetwork cppn(true);
-    BuildPhenotype(cppn);
-    cppn.Flush();
-
-    boost::shared_ptr<QuadPoint> root  = boost::shared_ptr<QuadPoint>(new QuadPoint(params.Qtree_X, params.Qtree_Y, params.Width, params.Height, 1));
-
-    DivideInitialize(node, root, cppn, params, outgoing, 0.0);
-    PruneExpress(node, root, cppn, params, validpoints, outgoing);
-    py::list return_values;
-
-    for (unsigned int i = 0; i < validpoints.size(); i++)
-    {
-        return_values.append(validpoints[i].target);
-    }
-
-    return return_values;
-}
+#endif
 
 // Removes all the dangling connections. This still leaves the nodes though,
 void Genome::Clean_Net(std::vector<Connection>& connections, unsigned int input_count,unsigned int output_count,unsigned int hidden_count)

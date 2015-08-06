@@ -16,7 +16,7 @@ try:
     1/0
 
     setup(name='MultiNEAT',
-          version='0.2',
+          version='0.3',
           py_modules=['MultiNEAT'],
           ext_modules = cythonize([Extension('_MultiNEAT',
                                              ['_MultiNEAT.pyx',
@@ -30,14 +30,19 @@ try:
                                               'src/Species.cpp',
                                               'src/Substrate.cpp',
                                               'src/Utils.cpp'],
-                                     extra_compile_args=['-O3', '-march=native'])],
+                                  extra_compile_args=['-O3', '-march=native', #'/EHsc', # for Windows
+                                                      '-std=gnu++11',
+                                                      '-g',
+                                                      '-Wall'
+                 ])
+],
                                     ))
 
 except Exception as ex:
     print('Cython is not present, trying boost::python (with boost::random and boost::serialization)')
 
     setup(name='MultiNEAT',
-          version='0.2',
+          version='0.3',
           py_modules=['MultiNEAT'],
           ext_modules=[Extension('_MultiNEAT', ['src/Genome.cpp',
                                                 'src/Innovation.cpp',
@@ -52,7 +57,13 @@ except Exception as ex:
                                                 'src/Utils.cpp'],
                                  libraries=[lb,
                                             'boost_serialization'],
-                                 extra_compile_args=['-O3', '-march=native',
+                                            
+                                 # for Windows                                 
+                                 #libraries=[],
+                                 #include_dirs = ['C:/Users/Peter/Desktop/boost_1_58_0'],
+                                 #library_dirs = ['C:/Users/Peter/Desktop/boost_1_58_0/stage/lib'],
+
+                                 extra_compile_args=['-O3', '-march=native', #'/EHsc', # for Windows
                                                      '-DUSE_BOOST_PYTHON',
                                                      '-DUSE_BOOST_RANDOM', 
                                                     '-std=gnu++11',

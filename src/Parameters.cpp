@@ -312,9 +312,9 @@ void Parameters::Reset()
     ActivationFunction_Abs_Prob = 0.0;
     ActivationFunction_SignedSine_Prob = 0.0;
     ActivationFunction_UnsignedSine_Prob = 0.0;
-    ActivationFunction_SignedSquare_Prob = 0.0;
-    ActivationFunction_UnsignedSquare_Prob = 0.0;
     ActivationFunction_Linear_Prob = 0.0;
+    ActivationFunction_Relu_Prob = 0.0;
+    ActivationFunction_Softplus_Prob = 0.0;
 
 
 
@@ -717,12 +717,12 @@ int Parameters::Load(std::ifstream& a_DataFile)
             a_DataFile >> ActivationFunction_SignedSine_Prob;
         if (s == "ActivationFunction_UnsignedSine_Prob")
             a_DataFile >> ActivationFunction_UnsignedSine_Prob;
-        if (s == "ActivationFunction_SignedSquare_Prob")
-            a_DataFile >> ActivationFunction_SignedSquare_Prob;
-        if (s == "ActivationFunction_UnsignedSquare_Prob")
-            a_DataFile >> ActivationFunction_UnsignedSquare_Prob;
         if (s == "ActivationFunction_Linear_Prob")
             a_DataFile >> ActivationFunction_Linear_Prob;
+        if (s == "ActivationFunction_Relu_Prob")
+            a_DataFile >> ActivationFunction_Relu_Prob;
+        if (s == "ActivationFunction_Softplus_Prob")
+            a_DataFile >> ActivationFunction_Softplus_Prob;
 
         if (s == "DisjointCoeff")
             a_DataFile >> DisjointCoeff;
@@ -780,6 +780,9 @@ int Parameters::Load(std::ifstream& a_DataFile)
 
         if (s == "IterationLevel")
             a_DataFile >> IterationLevel;
+
+        if (s == "TournamentSize")
+            a_DataFile >> TournamentSize;
 
         if (s == "CPPN_Bias")
             a_DataFile >> CPPN_Bias;
@@ -929,9 +932,9 @@ void Parameters::Save(FILE* a_fstream)
     fprintf(a_fstream, "ActivationFunction_Abs_Prob %3.20f\n", ActivationFunction_Abs_Prob);
     fprintf(a_fstream, "ActivationFunction_SignedSine_Prob %3.20f\n", ActivationFunction_SignedSine_Prob);
     fprintf(a_fstream, "ActivationFunction_UnsignedSine_Prob %3.20f\n", ActivationFunction_UnsignedSine_Prob);
-    fprintf(a_fstream, "ActivationFunction_SignedSquare_Prob %3.20f\n", ActivationFunction_SignedSquare_Prob);
-    fprintf(a_fstream, "ActivationFunction_UnsignedSquare_Prob %3.20f\n", ActivationFunction_UnsignedSquare_Prob);
     fprintf(a_fstream, "ActivationFunction_Linear_Prob %3.20f\n", ActivationFunction_Linear_Prob);
+    fprintf(a_fstream, "ActivationFunction_Relu_Prob %3.20f\n", ActivationFunction_Relu_Prob);
+    fprintf(a_fstream, "ActivationFunction_Softplus_Prob %3.20f\n", ActivationFunction_Softplus_Prob);
     fprintf(a_fstream, "MutateNeuronTimeConstantsProb %3.20f\n", MutateNeuronTimeConstantsProb);
     fprintf(a_fstream, "MutateNeuronBiasesProb %3.20f\n", MutateNeuronBiasesProb);
     fprintf(a_fstream, "MinNeuronTimeConstant %3.20f\n", MinNeuronTimeConstant);
@@ -957,7 +960,8 @@ void Parameters::Save(FILE* a_fstream)
     fprintf(a_fstream, "InitialDepth %d\n", InitialDepth);
     fprintf(a_fstream, "MaxDepth %d\n", MaxDepth);
     fprintf(a_fstream, "IterationLevel %d\n", IterationLevel);
-    fprintf(a_fstream, "CPPN_Bias %f\n", CPPN_Bias);
+    fprintf(a_fstream, "TournamentSize %d\n", TournamentSize);
+    fprintf(a_fstream, "CPPN_Bias %3.20f\n", CPPN_Bias);
     fprintf(a_fstream, "Width %3.20f\n", Width);
     fprintf(a_fstream, "Height %3.20f\n", Height);
     fprintf(a_fstream, "Qtree_X %3.20f\n", Qtree_X);
@@ -965,9 +969,9 @@ void Parameters::Save(FILE* a_fstream)
     fprintf(a_fstream, "Leo %s\n", Leo==true?"true":"false");
     fprintf(a_fstream, "LeoThreshold %3.20f\n", LeoThreshold);
     fprintf(a_fstream, "LeoSeed %s\n", LeoSeed==true?"true":"false");
-       fprintf(a_fstream, "GeometrySeed %s\n", GeometrySeed==true?"true":"false");
-    fprintf(a_fstream, "TournamentSize%d\n", TournamentSize );
-    fprintf(a_fstream, "Elitism%f\n", Elitism);
+    fprintf(a_fstream, "GeometrySeed %s\n", GeometrySeed==true?"true":"false");
+
+    fprintf(a_fstream, "Elitism %3.20f\n", Elitism);
 
     fprintf(a_fstream, "NEAT_ParametersEnd\n");
 }

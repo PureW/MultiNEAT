@@ -39,7 +39,6 @@
 #include "Species.h"
 #include "Parameters.h"
 #include "Random.h"
-#include "NSGAPopulation.h"
 
 namespace py = boost::python;
 using namespace NEAT;
@@ -74,9 +73,9 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
         .value("ABS", ABS)
         .value("SIGNED_SINE", SIGNED_SINE)
         .value("UNSIGNED_SINE", UNSIGNED_SINE)
-        .value("SIGNED_SQUARE", SIGNED_SQUARE)
-        .value("UNSIGNED_SQUARE", UNSIGNED_SQUARE)
         .value("LINEAR", LINEAR)
+        .value("RELU", RELU)
+        .value("SOFTPLUS", SOFTPLUS)
         ;
 
     enum_<SearchMode>("SearchMode")
@@ -106,17 +105,23 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
 ///////////////////////////////////////////////////////////////////
 
     class_<Connection>("Connection", init<>())
-            .def_readonly("source_neuron_idx", &Connection::m_source_neuron_idx)
-            .def_readonly("target_neuron_idx", &Connection::m_target_neuron_idx)
-            .def_readonly("weight", &Connection::m_weight)
-            .def_readonly("recur_flag", &Connection::m_recur_flag)
+            .def_readwrite("source_neuron_idx", &Connection::m_source_neuron_idx)
+            .def_readwrite("target_neuron_idx", &Connection::m_target_neuron_idx)
+            .def_readwrite("weight", &Connection::m_weight)
+            .def_readwrite("recur_flag", &Connection::m_recur_flag)
+            .def_readwrite("hebb_rate", &Connection::m_hebb_rate)
+            .def_readwrite("hebb_pre_rate", &Connection::m_hebb_pre_rate)
             ;
 
     class_<Neuron>("Neuron", init<>())
-            .def_readonly("activation", &Neuron::m_activation)
-            .def_readonly("activation_function_type", &Neuron::m_activation_function_type)
-            .def_readonly("split_y", &Neuron::m_split_y)
-            .def_readonly("type", &Neuron::m_type)
+            .def_readwrite("a", &Neuron::m_a)
+            .def_readwrite("b", &Neuron::m_b)
+            .def_readwrite("time_const", &Neuron::m_timeconst)
+            .def_readwrite("bias", &Neuron::m_bias)
+            .def_readwrite("activation", &Neuron::m_activation)
+            .def_readwrite("activation_function_type", &Neuron::m_activation_function_type)
+            .def_readwrite("split_y", &Neuron::m_split_y)
+            .def_readwrite("type", &Neuron::m_type)
             .def_readwrite("x", &Neuron::m_x)
             .def_readwrite("y", &Neuron::m_y)
             .def_readwrite("z", &Neuron::m_z)
@@ -179,10 +184,19 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
             NN_Input_numpy)
             .def("Output",
             &NeuralNetwork::Output)
+            
+            .def("AddNeuron",
+            &NeuralNetwork::AddNeuron)
+            .def("AddConnection",
+            &NeuralNetwork::AddConnection)
+            .def("SetInputOutputDimentions",
+            &NeuralNetwork::SetInputOutputDimentions)
+
             .def("GetTotalConnectionLength", &NeuralNetwork::GetTotalConnectionLength)
 
+
             .def_readwrite("neurons", &NeuralNetwork::m_neurons)
-            .def_readonly("connections", &NeuralNetwork::m_connections)
+            .def_readwrite("connections", &NeuralNetwork::m_connections)
             ;
 
 
@@ -198,7 +212,7 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
             .def(init<char*>())
             .def(init<unsigned int, unsigned int, unsigned int, unsigned int,
                     bool, ActivationFunction, ActivationFunction, int, Parameters>())
-	    .def(init<unsigned int, unsigned int, unsigned int,
+	        .def(init<unsigned int, unsigned int, unsigned int,
                     bool, ActivationFunction, ActivationFunction, Parameters>())
             .def("NumNeurons", &Genome::NumNeurons)
             .def("NumLinks", &Genome::NumLinks)
@@ -213,6 +227,8 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
             .def("BuildPhenotype", &Genome::BuildPhenotype)
             .def("DerivePhenotypicChanges", &Genome::DerivePhenotypicChanges)
             .def("BuildHyperNEATPhenotype", &Genome::BuildHyperNEATPhenotype)
+            
+             .def("Randomize_LinkWeights", &Genome::Randomize_LinkWeights)
 
             .def("IsEvaluated", &Genome::IsEvaluated)
             .def("SetEvaluated", &Genome::SetEvaluated)
@@ -251,14 +267,20 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
 // Substrate class
 ///////////////////////////////////////////////////////////////////
 
+    void (Substrate::*SetCustomConnectivity_Py)(py::list) = &Substrate::SetCustomConnectivity;
+
     class_<Substrate>("Substrate", init<>())
             .def(init<list, list, list>())
             .def("GetMinCPPNInputs", &Substrate::GetMinCPPNInputs)
             .def("GetMinCPPNOutputs", &Substrate::GetMinCPPNOutputs)
             .def("PrintInfo", &Substrate::PrintInfo)
+            .def("SetCustomConnectivity", SetCustomConnectivity_Py)
+			.def("ClearCustomConnectivity", &Substrate::ClearCustomConnectivity)
 
             .def_readwrite("m_leaky", &Substrate::m_leaky)
             .def_readwrite("m_with_distance", &Substrate::m_with_distance)
+			.def_readwrite("m_custom_conn_obeys_flags", &Substrate::m_custom_conn_obeys_flags)
+			.def_readwrite("m_query_weights_only", &Substrate::m_query_weights_only)
             .def_readwrite("m_hidden_nodes_activation", &Substrate::m_hidden_nodes_activation)
             .def_readwrite("m_output_nodes_activation", &Substrate::m_output_nodes_activation)
 
@@ -271,10 +293,13 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
             .def_readwrite("m_allow_looped_hidden_links", &Substrate::m_allow_looped_hidden_links)
             .def_readwrite("m_allow_looped_output_links", &Substrate::m_allow_looped_output_links)
 
-            .def_readwrite("m_link_threshold", &Substrate::m_link_threshold)
             .def_readwrite("m_max_weight_and_bias", &Substrate::m_max_weight_and_bias)
             .def_readwrite("m_min_time_const", &Substrate::m_min_time_const)
             .def_readwrite("m_max_time_const", &Substrate::m_max_time_const)
+            
+            .def_readwrite("m_input_coords", &Substrate::m_input_coords )
+            .def_readwrite("m_hidden_coords", &Substrate::m_hidden_coords)
+            .def_readwrite("m_output_coords", &Substrate::m_output_coords)
 
             .def_pickle(Substrate_pickle_suite())
             ;
@@ -299,7 +324,7 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
 // Population class
 ///////////////////////////////////////////////////////////////////
 
-    class_<Population>("Population", init<Genome, Parameters, bool, double>())
+    class_<Population>("Population", init<Genome, Parameters, bool, double, int>())
             .def(init<char*>())
             .def("Epoch", &Population::Epoch)
             .def("Tick", &Population::Tick, return_value_policy<reference_existing_object>())
@@ -316,7 +341,7 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
             .def("NumGenomes", &Population::NumGenomes)
             .def_readwrite("Species", &Population::m_Species)
             .def_readwrite("Parameters", &Population::m_Parameters)
-
+            .def_readwrite("RNG", &Population::m_RNG)
             ;
 
 ///////////////////////////////////////////////////////////////////
@@ -407,8 +432,6 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
             .def_readwrite("ActivationFunction_Abs_Prob", &Parameters::ActivationFunction_Abs_Prob)
             .def_readwrite("ActivationFunction_SignedSine_Prob", &Parameters::ActivationFunction_SignedSine_Prob)
             .def_readwrite("ActivationFunction_UnsignedSine_Prob", &Parameters::ActivationFunction_UnsignedSine_Prob)
-            .def_readwrite("ActivationFunction_SignedSquare_Prob", &Parameters::ActivationFunction_SignedSquare_Prob)
-            .def_readwrite("ActivationFunction_UnsignedSquare_Prob", &Parameters::ActivationFunction_UnsignedSquare_Prob)
             .def_readwrite("ActivationFunction_Linear_Prob", &Parameters::ActivationFunction_Linear_Prob)
             .def_readwrite("DisjointCoeff", &Parameters::DisjointCoeff)
             .def_readwrite("ExcessCoeff", &Parameters::ExcessCoeff)
@@ -437,9 +460,12 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
             .def_readwrite("Leo", &Parameters::Leo)
             .def_readwrite("LeoThreshold", &Parameters::LeoThreshold)
             .def_readwrite("LeoSeed", &Parameters::LeoSeed)
+
             .def_readwrite("GeometrySeed", &Parameters::GeometrySeed)
             .def_readwrite("TournamentSize", &Parameters::TournamentSize)
             .def_readwrite("Elitism", &Parameters::Elitism)
+
+			.def_pickle(Parameters_pickle_suite())
         ;
 
 
@@ -458,9 +484,17 @@ BOOST_PYTHON_MODULE(_MultiNEAT)
     class_< std::vector<float> >("FloatsList")
             .def(vector_indexing_suite< std::vector<float> >() )
             ;
+            
+    class_< std::vector< std::vector<float> > >("FloatsList2D")
+            .def(vector_indexing_suite< std::vector< std::vector<float> > >() )
+            ;
 
     class_< std::vector<int> >("IntsList")
             .def(vector_indexing_suite< std::vector<int> >() )
+            ;
+            
+    class_< std::vector< std::vector<int> > >("IntsList2D")
+            .def(vector_indexing_suite< std::vector< std::vector<int> > >() )
             ;
 
     // These are necessary to let us iterate through the vectors of species, genomes and genes

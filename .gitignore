@@ -8,3 +8,6 @@ datadump/*
 *core*
 .lock*
 .waf*
+/Release/
+/Debug/
+

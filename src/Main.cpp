@@ -147,7 +147,6 @@ int main()
     params.Width = 1.;
     params.Height = 1.;
     params.Elitism = 0.1;
-
     std::vector< std::vector<double> > inputs;
     std::vector< std::vector<double> > hidden;
     std::vector< std::vector<double> > outputs;
@@ -209,17 +208,23 @@ int main()
     substrate.m_hidden_nodes_activation = SIGNED_SIGMOID;
     substrate.m_output_nodes_activation = UNSIGNED_SIGMOID;
 
-    substrate.m_link_threshold = 0.2;
+    substrate.m_with_distance = true;
+
     substrate.m_max_weight_and_bias = 8.0;
 
-    Genome s(0, 7, 1, false, SIGNED_SIGMOID, SIGNED_SIGMOID,
-            params);
-    //NSGA
-    Population pop(s, params, true, 1.0);
+    Genome s(0, 7, 1, false, SIGNED_SIGMOID, SIGNED_SIGMOID, params);
+    /*Genome s(0, substrate.GetMinCPPNInputs(),
+				0,
+				substrate.GetMinCPPNOutputs(),
+				false,
+				TANH,
+				TANH,
+				0,
+				params);*/
+    Population pop(s, params, true, 1.0, 0);
 
     for(int k=0; k<100; k++)
     {
-        //std::vector<double> bestf(2,-999999);
         double bestf = -999999;
         for(unsigned int i=0; i < pop.m_Species.size(); i++)
         {
@@ -235,23 +240,8 @@ int main()
                 }
             }
         }
-            /*
-        for(unsigned int i=0; i < pop.m_Genomes.size(); i++)
-        {
-            std::vector<double> f = xortest(pop.m_Genomes[i], substrate, params);
-                pop.m_Genomes[i].SetMultiFitness(f);
-                pop.m_Genomes[i].SetEvaluated();
 
-                if (f > bestf)
-                {
-                    bestf = f;
-                }
-        }*/
-
-
-
-        //printf("Generation: %d, best fitness: %3.5f\n", k, bestf[0]);
-         printf("Generation: %d, best fitness: %3.5f\n", k, bestf);
+        printf("Generation: %d, best fitness: %3.5f\n", k, bestf);
         pop.Epoch();
     }
     return 0;

@@ -1,19 +1,18 @@
-#!/usr/bin/python
-from __future__ import division
+#!/usr/bin/python3
+
 import os
 import sys
 import time
 import random as rnd
-import commands as comm
+import subprocess as comm
 import cv2
 import numpy as np
 import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import cPickle as pickle
+import pickle as pickle
 import math
 import MultiNEAT as NEAT
-import utilities
 import pygame
 from pygame.locals import *
 from pygame.color import *
@@ -197,9 +196,7 @@ def evaluate(genome, space, screen, fast_mode, start_x, start_vx, bot_startx):
 
     # The agents - the brain and the ball
     net = NEAT.NeuralNetwork()
-    #genome.BuildPhenotype(net)
-    genome.Build_ES_Phenotype(net, substrate, params)
-
+    genome.BuildPhenotype(net)
 
     agent = NN_agent(space, net, bot_startx)
     ball = Ball(space, start_x, start_vx)
@@ -267,15 +264,14 @@ def evaluate(genome, space, screen, fast_mode, start_x, start_vx, bot_startx):
     # remove objects from space
     space.remove(agent.shape, agent.body)
     space.remove(ball.shape, ball.body)
-#    print 'Genome ID:', genome.GetID(), 'Fitness:', tstep
-    # the fitness is the number of ticks passed
+
     return fitness, fast_mode
 
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((600, 600))
-    pygame.display.set_caption("NEAT volleyball")
+    pygame.display.set_caption("NEAT ball keeper [Press F to turn on/off fast mode, arrow keys to move ball]")
 
 
     ### Physics stuff
@@ -304,15 +300,14 @@ def main():
 
 
 
-    #g = NEAT.Genome(0, 6, 0, 2, False, NEAT.ActivationFunction.TANH, NEAT.ActivationFunction.UNSIGNED_SIGMOID, 0, params)
-    g = NEAT.Genome(0, 7, 1, True, NEAT.ActivationFunction.SIGNED_SIGMOID, NEAT.ActivationFunction.SIGNED_SIGMOID,
-            params)
-    pop = NEAT.Population(g, params, True, 1.0)
+    g = NEAT.Genome(0, 6, 0, 2, False, 
+                    NEAT.ActivationFunction.TANH, NEAT.ActivationFunction.UNSIGNED_SIGMOID, 0, params)
+    pop = NEAT.Population(g, params, True, 1.0, rnd.randint(0, 1000))
 
     best_genome_ever = None
     fast_mode = True
     for generation in range(1000):
-        print "Generation:", generation
+        print("Generation:", generation)
 
         now = time.time()
         genome_list = []
@@ -320,7 +315,7 @@ def main():
             for i in s.Individuals:
                 genome_list.append(i)
 
-        print 'All individuals:', len(genome_list)
+        print('All individuals:', len(genome_list))
 
         for i, g in enumerate(genome_list):
             total_fitness = 0
@@ -328,33 +323,21 @@ def main():
                 f, fast_mode = evaluate(g, space, screen, fast_mode, rnd.randint(80, 400), rnd.randint(-200, 200), rnd.randint(80, 400))
                 total_fitness += f
             g.SetFitness(total_fitness / 20)
-        print
+        print()
 
         best = max([x.GetLeader().GetFitness() for x in pop.Species])
-        print 'Best fitness:', best, 'Species:', len(pop.Species)
+        print('Best fitness:', best, 'Species:', len(pop.Species))
 
 
         # Draw the best genome's phenotype
-        '''net = NEAT.NeuralNetwork()
-        best_genome_ever = pop.Species[0].GetLeader()
-        best_genome_ever.Build_ES_Phenotype(net, substrate, params)
-        img = np.zeros((250, 250, 3), dtype=np.uint8)
-        img += 10
-
-        utilities.DrawPhenotype(img, (0, 0, 250, 250), net )
-        cv2.imshow("current best", img)
-        cv2.waitKey(1)
-        '''
         if best >= 10000:
             break # evolution is complete if an individual keeps the ball up for that many timesteps
-        #if pop.GetStagnation() > 500:
-        #    break
 
-        print "Evaluation took", time.time() - now, "seconds."
-        print "Reproducing.."
+        print("Evaluation took", time.time() - now, "seconds.")
+        print("Reproducing..")
         now = time.time()
         pop.Epoch()
-        print "Reproduction took", time.time() - now, "seconds."
+        print("Reproduction took", time.time() - now, "seconds.")
 
     # Show the best genome's performance forever
     pygame.display.set_caption("Best genome ever")

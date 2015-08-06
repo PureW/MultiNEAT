@@ -33,16 +33,14 @@
 #ifdef USE_BOOST_PYTHON
 
 #include <boost/python.hpp>
-
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
 #endif
 
 #include <vector>
 #include <queue>
 #include <memory>
-
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/vector.hpp>
 
 #include "NeuralNetwork.h"
 #include "Substrate.h"
@@ -169,7 +167,7 @@ public:
     // This creates a standart minimal genome - perceptron-like structure
     Genome(unsigned int a_ID,
            unsigned int a_NumInputs,
-           unsigned int a_NumHidden, // ignored for type == 1, specifies number of hidden units if type == 0
+           unsigned int a_NumHidden, // ignored for seed_type == 0, specifies number of hidden units if seed_type == 1
            unsigned int a_NumOutputs,
            bool a_FS_NEAT, ActivationFunction a_OutputActType,
            ActivationFunction a_HiddenActType,
@@ -190,6 +188,8 @@ public:
            ActivationFunction a_OutputActType,
            ActivationFunction a_HiddenActType,
            const Parameters& a_Parameters);
+
+
     ////////////////////////////
     // Destructor
     ////////////////////////////
@@ -197,7 +197,8 @@ public:
     {
         Performance = perf;
     }
-    void SetLength(double len) {
+    void SetLength(double len)
+    {
         Length = len;
     }
     double GetPerformance()
@@ -248,16 +249,20 @@ public:
     // A little helper function to find the index of a link, given its innovation ID
     int GetLinkIndex(unsigned int a_innovid) const;
 
-    unsigned int NumNeurons() const {
+    unsigned int NumNeurons() const
+    {
         return static_cast<unsigned int>(m_NeuronGenes.size());
     }
-    unsigned int NumLinks() const {
+    unsigned int NumLinks() const
+    {
         return static_cast<unsigned int>(m_LinkGenes.size());
     }
-    unsigned int NumInputs() const {
+    unsigned int NumInputs() const
+    {
         return m_NumInputs;
     }
-    unsigned int NumOutputs() const {
+    unsigned int NumOutputs() const
+    {
         return m_NumOutputs;
     }
 
@@ -279,40 +284,50 @@ public:
     }
 
 
-    double GetFitness() const {
+    double GetFitness() const
+    {
         return m_Fitness;
     }
-    double GetAdjFitness() const {
+    double GetAdjFitness() const
+    {
         return m_AdjustedFitness;
     }
-    void SetFitness(double a_f) {
+    void SetFitness(double a_f)
+    {
         m_Fitness = a_f;
     }
-    void SetAdjFitness(double a_af) {
+    void SetAdjFitness(double a_af)
+    {
         m_AdjustedFitness = a_af;
     }
 
-    unsigned int GetID() const {
+    unsigned int GetID() const
+    {
         return m_ID;
     }
-    void SetID(int a_id) {
+    void SetID(int a_id)
+    {
         m_ID = a_id;
     }
 
-    unsigned int GetDepth() const {
+    unsigned int GetDepth() const
+    {
         return m_Depth;
     }
-    void SetDepth(int a_d) {
+    void SetDepth(int a_d)
+    {
         m_Depth = a_d;
     }
 
     // Returns true if there is any dead end in the network
     bool HasDeadEnds() const;
 
-    double GetOffspringAmount() const {
+    double GetOffspringAmount() const
+    {
         return m_OffspringAmount;
     }
-    void SetOffspringAmount(double a_oa) {
+    void SetOffspringAmount(double a_oa)
+    {
         m_OffspringAmount = a_oa;
     }
 
@@ -438,22 +453,25 @@ public:
     ////////////////////
     // new stuff
 
-    bool IsEvaluated() const {
+    bool IsEvaluated() const
+    {
         return m_Evaluated;
     }
-    void SetEvaluated() {
+    void SetEvaluated()
+    {
         m_Evaluated = true;
     }
-    void ResetEvaluated() {
+    void ResetEvaluated()
+    {
         m_Evaluated = false;
     }
 
 
-/////////////////////////////////////////////
-// Evolvable Substrate HyperNEAT
-////////////////////////////////////////////
+    /////////////////////////////////////////////
+    // Evolvable Substrate HyperNEAT
+    ////////////////////////////////////////////
 
-// A connection between two points. Stores weight and the coordinates of the points
+    // A connection between two points. Stores weight and the coordinates of the points
     struct TempConnection
     {
         std::vector<double> source;
@@ -464,6 +482,7 @@ public:
         {
             source.reserve(3);
             target.reserve(3);
+            weight = 0;
         }
 
         TempConnection( std::vector<double> t_source, std::vector<double> t_target,
@@ -474,7 +493,6 @@ public:
             weight = t_weight;
             source.reserve(3);
             target.reserve(3);
-
         }
 
         ~TempConnection() {};
@@ -488,7 +506,7 @@ public:
         }
     };
 
-// A quadpoint in the HyperCube.
+    // A quadpoint in the HyperCube.
     struct QuadPoint
     {
         double x;
@@ -544,12 +562,12 @@ public:
         {
         };
     };
-    void Build_ES_Phenotype(NeuralNetwork& net, Substrate& subst,
-                            Parameters& params);
 
-    void DivideInitialize(
-        const std::vector<double>& node,std::shared_ptr<QuadPoint>& root, NeuralNetwork& cppn, Parameters& params,
-        const bool& outgoing, const double& z_coord);
+    void Build_ES_Phenotype(NeuralNetwork& a_net, Substrate& subst, Parameters& params);
+    void DivideInitialize(const std::vector<double>& node,
+                          std::shared_ptr<QuadPoint>& root,
+                          NeuralNetwork& cppn, Parameters& params,
+                          const bool& outgoing, const double& z_coord);
 
     void PruneExpress(const std::vector<double>& node,
                       std::shared_ptr<QuadPoint>& root, NeuralNetwork& cppn,
@@ -559,9 +577,9 @@ public:
     void CollectValues(std::vector<double>& vals, std::shared_ptr<QuadPoint>& point);
 
     double Variance( std::shared_ptr<QuadPoint> &point);
-
     void Clean_Net( std::vector<Connection>& connections, unsigned int input_count,
                     unsigned int output_count, unsigned int hidden_count);
+
 
 #ifdef USE_BOOST_PYTHON
 
@@ -589,6 +607,9 @@ public:
 
 };
 
+
+
+
 #ifdef USE_BOOST_PYTHON
 
 struct Genome_pickle_suite : py::pickle_suite
@@ -596,7 +617,7 @@ struct Genome_pickle_suite : py::pickle_suite
     static py::object getstate(const Genome& a)
     {
         std::ostringstream os;
-        boost::archive::binary_oarchive oa(os);
+        boost::archive::text_oarchive oa(os);
         oa << a;
         return py::str (os.str());
     }
@@ -607,7 +628,7 @@ struct Genome_pickle_suite : py::pickle_suite
         std::string st = py::extract<std::string> (s)();
         std::istringstream is (st);
 
-        boost::archive::binary_iarchive ia (is);
+        boost::archive::text_iarchive ia (is);
         ia >> a;
     }
 };

@@ -50,6 +50,8 @@ class RNG
 #endif
 
 public:
+    RNG();
+    RNG(int seed);
     // Seeds the random number generator with this value
     void Seed(int seed);
 

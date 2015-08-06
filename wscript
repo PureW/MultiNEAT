@@ -71,7 +71,8 @@ def build(bld):
                 includes=INCLUDES,
                 cppflags=CPPFLAGS,
                 lib=LIBS,
-                use=LIBNAME
+                use=LIBNAME,
+                defines=['USE_BOOST_RANDOM'],
                 # linkflags=['-pg'],
                 )
 

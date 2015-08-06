@@ -37,7 +37,18 @@
 namespace NEAT
 {
 
+RNG::RNG() {
+#ifdef USE_BOOST_RANDOM
+    gen = std::mt19937();
+#endif
+}
 
+
+RNG::RNG(int seed) {
+#ifdef USE_BOOST_RANDOM
+    gen = std::mt19937(seed);
+#endif
+}
 // Seeds the random number generator with this value
 void RNG::Seed(int a_Seed)
 {

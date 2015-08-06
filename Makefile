@@ -8,10 +8,10 @@ TEST_DIR = .testing
 all: release
 
 debug:
-	rm -f build/$(PROGRAM) build/$(LIBRARY) && ./waf build_debug && mv build/debug/$(PROGRAM) build/debug/$(LIBRARY) build/
+	rm -f build/$(PROGRAM) build/$(LIBRARY) && ./waf build_debug && cp build/debug/$(PROGRAM) build/debug/$(LIBRARY) build/
 
 release:
-	rm -f build/$(PROGRAM) build/$(LIBRARY) && ./waf build_release && mv build/release/$(PROGRAM) build/release/$(LIBRARY) build/
+	rm -f build/$(PROGRAM) build/$(LIBRARY) && ./waf build_release && cp build/release/$(PROGRAM) build/release/$(LIBRARY) build/
 
 clean:
 	./waf clean_debug clean_release

@@ -592,8 +592,11 @@ void NeuralNetwork::FlushCube()
 }
 void NeuralNetwork::Input(std::vector<double>& a_Inputs)
 {
-    if (a_Inputs.size() != m_num_inputs)
+    if (a_Inputs.size() != m_num_inputs) {
+        fprintf(stderr, "ERROR: Input-size %u doesn't match network %u\n",
+                a_Inputs.size(), m_num_inputs);
         throw std::exception();
+    }
 
     for (unsigned int i = 0; i < a_Inputs.size(); i++)
     {

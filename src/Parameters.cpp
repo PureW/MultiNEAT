@@ -32,6 +32,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include "Parameters.h"
 
 
@@ -423,20 +424,29 @@ int Parameters::Load(std::ifstream& a_DataFile)
     std::string s,tf;
     do
     {
-        a_DataFile >> s;
+        std::getline(a_DataFile, s);
     }
-    while (s != "NEAT_ParametersStart");
+    while (s.find("NEAT_ParametersStart") == 0 && a_DataFile.good());
+    
+    std::getline(a_DataFile, s);
 
-    while(s != "NEAT_ParametersEnd")
+    while(s != "NEAT_ParametersEnd" && a_DataFile.good())
     {
-        a_DataFile >> s;
+        if (s.find("//") < std::string::npos) {
+            std::getline(a_DataFile, s);
+            continue;
+        }
+
+        std::stringstream ss;
+        ss << s;
+        ss >> s;
 
         if (s == "PopulationSize")
-            a_DataFile >> PopulationSize;
+            ss >> PopulationSize;
 
         if (s == "DynamicCompatibility")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 DynamicCompatibility = true;
             else
@@ -444,14 +454,14 @@ int Parameters::Load(std::ifstream& a_DataFile)
         }
 
         if (s == "MinSpecies")
-            a_DataFile >> MinSpecies;
+            ss >> MinSpecies;
 
         if (s == "MaxSpecies")
-            a_DataFile >> MaxSpecies;
+            ss >> MaxSpecies;
 
         if (s == "InnovationsForever")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 InnovationsForever = true;
             else
@@ -460,7 +470,7 @@ int Parameters::Load(std::ifstream& a_DataFile)
 
         if (s == "AllowClones")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 AllowClones = true;
             else
@@ -468,26 +478,26 @@ int Parameters::Load(std::ifstream& a_DataFile)
         }
 
         if (s == "YoungAgeTreshold")
-            a_DataFile >> YoungAgeTreshold;
+            ss >> YoungAgeTreshold;
 
         if (s == "YoungAgeFitnessBoost")
-            a_DataFile >> YoungAgeFitnessBoost;
+            ss >> YoungAgeFitnessBoost;
 
         if (s == "SpeciesDropoffAge")
-            a_DataFile >> SpeciesMaxStagnation;
+            ss >> SpeciesMaxStagnation;
 
         if (s == "StagnationDelta")
-            a_DataFile >> StagnationDelta;
+            ss >> StagnationDelta;
 
         if (s == "OldAgeTreshold")
-            a_DataFile >> OldAgeTreshold;
+            ss >> OldAgeTreshold;
 
         if (s == "OldAgePenalty")
-            a_DataFile >> OldAgePenalty;
+            ss >> OldAgePenalty;
 
         if (s == "DetectCompetetiveCoevolutionStagnation")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 DetectCompetetiveCoevolutionStagnation = true;
             else
@@ -495,29 +505,29 @@ int Parameters::Load(std::ifstream& a_DataFile)
         }
 
         if (s == "KillWorstSpeciesEach")
-            a_DataFile >> KillWorstSpeciesEach;
+            ss >> KillWorstSpeciesEach;
 
         if (s == "KillWorstAge")
-            a_DataFile >> KillWorstAge;
+            ss >> KillWorstAge;
 
         if (s == "SurvivalRate")
-            a_DataFile >> SurvivalRate;
+            ss >> SurvivalRate;
 
         if (s == "CrossoverRate")
-            a_DataFile >> CrossoverRate;
+            ss >> CrossoverRate;
 
         if (s == "OverallMutationRate")
-            a_DataFile >> OverallMutationRate;
+            ss >> OverallMutationRate;
 
         if (s == "InterspeciesCrossoverRate")
-            a_DataFile >> InterspeciesCrossoverRate;
+            ss >> InterspeciesCrossoverRate;
 
         if (s == "MultipointCrossoverRate")
-            a_DataFile >> MultipointCrossoverRate;
+            ss >> MultipointCrossoverRate;
 
         if (s == "RouletteWheelSelection")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 RouletteWheelSelection = true;
             else
@@ -526,7 +536,7 @@ int Parameters::Load(std::ifstream& a_DataFile)
 
         if (s == "PhasedSearching")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 PhasedSearching = true;
             else
@@ -535,7 +545,7 @@ int Parameters::Load(std::ifstream& a_DataFile)
 
         if (s == "DeltaCoding")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 DeltaCoding = true;
             else
@@ -543,23 +553,23 @@ int Parameters::Load(std::ifstream& a_DataFile)
         }
 
         if (s == "SimplifyingPhaseMPCTreshold")
-            a_DataFile >> SimplifyingPhaseMPCTreshold;
+            ss >> SimplifyingPhaseMPCTreshold;
 
         if (s == "SimplifyingPhaseStagnationTreshold")
-            a_DataFile >> SimplifyingPhaseStagnationTreshold;
+            ss >> SimplifyingPhaseStagnationTreshold;
 
         if (s == "ComplexityFloorGenerations")
-            a_DataFile >> ComplexityFloorGenerations;
+            ss >> ComplexityFloorGenerations;
 
         if (s == "NoveltySearch_K")
-            a_DataFile >> NoveltySearch_K;
+            ss >> NoveltySearch_K;
 
         if (s == "NoveltySearch_P_min")
-            a_DataFile >> NoveltySearch_P_min;
+            ss >> NoveltySearch_P_min;
 
         if (s == "NoveltySearch_Dynamic_Pmin")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 NoveltySearch_Dynamic_Pmin = true;
             else
@@ -567,29 +577,29 @@ int Parameters::Load(std::ifstream& a_DataFile)
         }
 
         if (s == "NoveltySearch_No_Archiving_Stagnation_Treshold")
-            a_DataFile >> NoveltySearch_No_Archiving_Stagnation_Treshold;
+            ss >> NoveltySearch_No_Archiving_Stagnation_Treshold;
 
         if (s == "NoveltySearch_Pmin_lowering_multiplier")
-            a_DataFile >> NoveltySearch_Pmin_lowering_multiplier;
+            ss >> NoveltySearch_Pmin_lowering_multiplier;
 
         if (s == "NoveltySearch_Pmin_min")
-            a_DataFile >> NoveltySearch_Pmin_min;
+            ss >> NoveltySearch_Pmin_min;
 
         if (s == "NoveltySearch_Quick_Archiving_Min_Evaluations")
-            a_DataFile >> NoveltySearch_Quick_Archiving_Min_Evaluations;
+            ss >> NoveltySearch_Quick_Archiving_Min_Evaluations;
 
         if (s == "NoveltySearch_Pmin_raising_multiplier")
-            a_DataFile >> NoveltySearch_Pmin_raising_multiplier;
+            ss >> NoveltySearch_Pmin_raising_multiplier;
 
         if (s == "NoveltySearch_Recompute_Sparseness_Each")
-            a_DataFile >> NoveltySearch_Recompute_Sparseness_Each;
+            ss >> NoveltySearch_Recompute_Sparseness_Each;
 
         if (s == "MutateAddNeuronProb")
-            a_DataFile >> MutateAddNeuronProb;
+            ss >> MutateAddNeuronProb;
 
         if (s == "SplitRecurrent")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 SplitRecurrent = true;
             else
@@ -598,7 +608,7 @@ int Parameters::Load(std::ifstream& a_DataFile)
 
         if (s == "SplitLoopedRecurrent")
         {
-            a_DataFile >> tf;
+            ss >> tf;
             if (tf == "true" || tf == "1" || tf == "1.0")
                 SplitLoopedRecurrent = true;
             else
@@ -606,208 +616,208 @@ int Parameters::Load(std::ifstream& a_DataFile)
         }
 
         if (s == "MutateAddLinkProb")
-            a_DataFile >> MutateAddLinkProb;
+            ss >> MutateAddLinkProb;
 
         if (s == "MutateAddLinkFromBiasProb")
-            a_DataFile >> MutateAddLinkFromBiasProb;
+            ss >> MutateAddLinkFromBiasProb;
 
         if (s == "MutateRemLinkProb")
-            a_DataFile >> MutateRemLinkProb;
+            ss >> MutateRemLinkProb;
 
         if (s == "MutateRemSimpleNeuronProb")
-            a_DataFile >> MutateRemSimpleNeuronProb;
+            ss >> MutateRemSimpleNeuronProb;
 
         if (s == "LinkTries")
-            a_DataFile >> LinkTries;
+            ss >> LinkTries;
 
         if (s == "RecurrentProb")
-            a_DataFile >> RecurrentProb;
+            ss >> RecurrentProb;
 
         if (s == "RecurrentLoopProb")
-            a_DataFile >> RecurrentLoopProb;
+            ss >> RecurrentLoopProb;
 
         if (s == "MutateWeightsProb")
-            a_DataFile >> MutateWeightsProb;
+            ss >> MutateWeightsProb;
 
         if (s == "MutateWeightsSevereProb")
-            a_DataFile >> MutateWeightsSevereProb;
+            ss >> MutateWeightsSevereProb;
 
         if (s == "WeightMutationRate")
-            a_DataFile >> WeightMutationRate;
+            ss >> WeightMutationRate;
 
         if (s == "WeightMutationMaxPower")
-            a_DataFile >> WeightMutationMaxPower;
+            ss >> WeightMutationMaxPower;
 
         if (s == "WeightReplacementMaxPower")
-            a_DataFile >> WeightReplacementMaxPower;
+            ss >> WeightReplacementMaxPower;
 
         if (s == "MaxWeight")
-            a_DataFile >> MaxWeight;
+            ss >> MaxWeight;
 
         if (s == "MutateActivationAProb")
-            a_DataFile >> MutateActivationAProb;
+            ss >> MutateActivationAProb;
 
         if (s == "MutateActivationBProb")
-            a_DataFile >> MutateActivationBProb;
+            ss >> MutateActivationBProb;
 
         if (s == "ActivationAMutationMaxPower")
-            a_DataFile >> ActivationAMutationMaxPower;
+            ss >> ActivationAMutationMaxPower;
 
         if (s == "ActivationBMutationMaxPower")
-            a_DataFile >> ActivationBMutationMaxPower;
+            ss >> ActivationBMutationMaxPower;
 
         if (s == "MinActivationA")
-            a_DataFile >> MinActivationA;
+            ss >> MinActivationA;
 
         if (s == "MaxActivationA")
-            a_DataFile >> MaxActivationA;
+            ss >> MaxActivationA;
 
         if (s == "MinActivationB")
-            a_DataFile >> MinActivationB;
+            ss >> MinActivationB;
 
         if (s == "MaxActivationB")
-            a_DataFile >> MaxActivationB;
+            ss >> MaxActivationB;
 
         if (s == "TimeConstantMutationMaxPower")
-            a_DataFile >> TimeConstantMutationMaxPower;
+            ss >> TimeConstantMutationMaxPower;
 
         if (s == "BiasMutationMaxPower")
-            a_DataFile >> BiasMutationMaxPower;
+            ss >> BiasMutationMaxPower;
 
         if (s == "MutateNeuronTimeConstantsProb")
-            a_DataFile >> MutateNeuronTimeConstantsProb;
+            ss >> MutateNeuronTimeConstantsProb;
 
         if (s == "MutateNeuronBiasesProb")
-            a_DataFile >> MutateNeuronBiasesProb;
+            ss >> MutateNeuronBiasesProb;
 
         if (s == "MinNeuronTimeConstant")
-            a_DataFile >> MinNeuronTimeConstant;
+            ss >> MinNeuronTimeConstant;
 
         if (s == "MaxNeuronTimeConstant")
-            a_DataFile >> MaxNeuronTimeConstant;
+            ss >> MaxNeuronTimeConstant;
 
         if (s == "MinNeuronBias")
-            a_DataFile >> MinNeuronBias;
+            ss >> MinNeuronBias;
 
         if (s == "MaxNeuronBias")
-            a_DataFile >> MaxNeuronBias;
+            ss >> MaxNeuronBias;
 
         if (s == "MutateNeuronActivationTypeProb")
-            a_DataFile >> MutateNeuronActivationTypeProb;
+            ss >> MutateNeuronActivationTypeProb;
 
         if (s == "ActivationFunction_SignedSigmoid_Prob")
-            a_DataFile >> ActivationFunction_SignedSigmoid_Prob;
+            ss >> ActivationFunction_SignedSigmoid_Prob;
         if (s == "ActivationFunction_UnsignedSigmoid_Prob")
-            a_DataFile >> ActivationFunction_UnsignedSigmoid_Prob;
+            ss >> ActivationFunction_UnsignedSigmoid_Prob;
         if (s == "ActivationFunction_Tanh_Prob")
-            a_DataFile >> ActivationFunction_Tanh_Prob;
+            ss >> ActivationFunction_Tanh_Prob;
         if (s == "ActivationFunction_TanhCubic_Prob")
-            a_DataFile >> ActivationFunction_TanhCubic_Prob;
+            ss >> ActivationFunction_TanhCubic_Prob;
         if (s == "ActivationFunction_SignedStep_Prob")
-            a_DataFile >> ActivationFunction_SignedStep_Prob;
+            ss >> ActivationFunction_SignedStep_Prob;
         if (s == "ActivationFunction_UnsignedStep_Prob")
-            a_DataFile >> ActivationFunction_UnsignedStep_Prob;
+            ss >> ActivationFunction_UnsignedStep_Prob;
         if (s == "ActivationFunction_SignedGauss_Prob")
-            a_DataFile >> ActivationFunction_SignedGauss_Prob;
+            ss >> ActivationFunction_SignedGauss_Prob;
         if (s == "ActivationFunction_UnsignedGauss_Prob")
-            a_DataFile >> ActivationFunction_UnsignedGauss_Prob;
+            ss >> ActivationFunction_UnsignedGauss_Prob;
         if (s == "ActivationFunction_Abs_Prob")
-            a_DataFile >> ActivationFunction_Abs_Prob;
+            ss >> ActivationFunction_Abs_Prob;
         if (s == "ActivationFunction_SignedSine_Prob")
-            a_DataFile >> ActivationFunction_SignedSine_Prob;
+            ss >> ActivationFunction_SignedSine_Prob;
         if (s == "ActivationFunction_UnsignedSine_Prob")
-            a_DataFile >> ActivationFunction_UnsignedSine_Prob;
+            ss >> ActivationFunction_UnsignedSine_Prob;
         if (s == "ActivationFunction_Linear_Prob")
-            a_DataFile >> ActivationFunction_Linear_Prob;
+            ss >> ActivationFunction_Linear_Prob;
         if (s == "ActivationFunction_Relu_Prob")
-            a_DataFile >> ActivationFunction_Relu_Prob;
+            ss >> ActivationFunction_Relu_Prob;
         if (s == "ActivationFunction_Softplus_Prob")
-            a_DataFile >> ActivationFunction_Softplus_Prob;
+            ss >> ActivationFunction_Softplus_Prob;
 
         if (s == "DisjointCoeff")
-            a_DataFile >> DisjointCoeff;
+            ss >> DisjointCoeff;
 
         if (s == "ExcessCoeff")
-            a_DataFile >> ExcessCoeff;
+            ss >> ExcessCoeff;
 
         if (s == "WeightDiffCoeff")
-            a_DataFile >> WeightDiffCoeff;
+            ss >> WeightDiffCoeff;
 
         if (s == "ActivationADiffCoeff")
-            a_DataFile >> ActivationADiffCoeff;
+            ss >> ActivationADiffCoeff;
 
         if (s == "ActivationBDiffCoeff")
-            a_DataFile >> ActivationBDiffCoeff;
+            ss >> ActivationBDiffCoeff;
 
         if (s == "TimeConstantDiffCoeff")
-            a_DataFile >> TimeConstantDiffCoeff;
+            ss >> TimeConstantDiffCoeff;
 
         if (s == "BiasDiffCoeff")
-            a_DataFile >> BiasDiffCoeff;
+            ss >> BiasDiffCoeff;
 
         if (s == "ActivationFunctionDiffCoeff")
-            a_DataFile >> ActivationFunctionDiffCoeff;
+            ss >> ActivationFunctionDiffCoeff;
 
         if (s == "CompatTreshold")
-            a_DataFile >> CompatTreshold;
+            ss >> CompatTreshold;
 
         if (s == "MinCompatTreshold")
-            a_DataFile >> MinCompatTreshold;
+            ss >> MinCompatTreshold;
 
         if (s == "CompatTresholdModifier")
-            a_DataFile >> CompatTresholdModifier;
+            ss >> CompatTresholdModifier;
 
         if (s == "CompatTreshChangeInterval_Generations")
-            a_DataFile >> CompatTreshChangeInterval_Generations;
+            ss >> CompatTreshChangeInterval_Generations;
 
         if (s == "CompatTreshChangeInterval_Evaluations")
-            a_DataFile >> CompatTreshChangeInterval_Evaluations;
+            ss >> CompatTreshChangeInterval_Evaluations;
 
         if (s == "DivisionThreshold")
-            a_DataFile >> DivisionThreshold;
+            ss >> DivisionThreshold;
 
         if (s == "VarianceThreshold")
-            a_DataFile >> VarianceThreshold;
+            ss >> VarianceThreshold;
 
         if (s == "BandThreshold")
-            a_DataFile >> BandThreshold;
+            ss >> BandThreshold;
 
         if (s == "InitialDepth")
-            a_DataFile >> InitialDepth;
+            ss >> InitialDepth;
 
         if (s == "MaxDepth")
-            a_DataFile >> MaxDepth;
+            ss >> MaxDepth;
 
         if (s == "IterationLevel")
-            a_DataFile >> IterationLevel;
+            ss >> IterationLevel;
 
         if (s == "TournamentSize")
-            a_DataFile >> TournamentSize;
+            ss >> TournamentSize;
 
         if (s == "CPPN_Bias")
-            a_DataFile >> CPPN_Bias;
+            ss >> CPPN_Bias;
 
         if (s == "Width")
-            a_DataFile >> Width;
+            ss >> Width;
 
         if (s == "Height")
-            a_DataFile >> Height;
+            ss >> Height;
 
         if (s == "Qtree_X")
-            a_DataFile >> Qtree_X;
+            ss >> Qtree_X;
 
         if (s == "Qtree_Y")
-            a_DataFile >> Qtree_Y;
+            ss >> Qtree_Y;
 
         if (s == "Leo")
-        {  a_DataFile >> tf;
+        {  ss >> tf;
            if (tf == "true" || tf == "1" || tf == "1.0")
                 Leo = true;
             else
                 Leo = false;
         }
         if (s == "GeometrySeed")
-        {  a_DataFile >> tf;
+        {  ss >> tf;
            if (tf == "true" || tf == "1" || tf == "1.0")
                 GeometrySeed = true;
             else
@@ -815,22 +825,29 @@ int Parameters::Load(std::ifstream& a_DataFile)
         }
 
         if (s == "LeoThreshold")
-            a_DataFile >> LeoThreshold;
+            ss >> LeoThreshold;
 
         if (s == "LeoSeed")
         {
-            a_DataFile >> tf;
+            ss >> tf;
            if (tf == "true" || tf == "1" || tf == "1.0")
                 LeoSeed = true;
             else
                 LeoSeed = false;
         }
         if (s == "TournamentSize")
-            a_DataFile >> TournamentSize;
+            ss >> TournamentSize;
         if (s == "Elitism")
-            a_DataFile >> Elitism;
+            ss >> Elitism;
+
+        std::getline(a_DataFile, s);
     }
 
+    if (!a_DataFile.good()) {
+        fprintf(stderr, "ERROR: Could not load parameters from stream.\n");
+        Reset();
+        return 1;
+    }
     return 0;
 }
 
